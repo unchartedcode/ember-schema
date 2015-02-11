@@ -6,10 +6,10 @@ require 'ember/schema/version'
 Gem::Specification.new do |spec|
   spec.name          = "ember-schema"
   spec.version       = Ember::Schema::VERSION
-  spec.authors       = ["TODO: Write your name"]
-  spec.email         = ["TODO: Write your email address"]
-  spec.summary       = %q{TODO: Write a short summary. Required.}
-  spec.description   = %q{TODO: Write a longer description. Optional.}
+  spec.authors       = ["Nathan Palmer", "Aaron Hansen"]
+  spec.email         = ["nathan@nathanpalmer.com"]
+  spec.summary       = %q{Generates a json schema for restpack_serializer models}
+  # spec.description   = %q{TODO: Write a longer description. Optional.}
   spec.homepage      = ""
   spec.license       = "MIT"
 

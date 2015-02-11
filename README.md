@@ -1,6 +1,6 @@
 # Ember::Schema
 
-TODO: Write a gem description
+Generates a json schema for restpack_serializer models
 
 ## Installation
 

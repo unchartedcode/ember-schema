@@ -1,4 +1,4 @@
-# Ember::Schema
+# UnchartedCode Ember::Schema
 
 Generates a json schema for restpack_serializer models
 
@@ -18,7 +18,17 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+The schema will automatically be generated when you run db:migrate
+
+```
+rake db:migrate
+```
+
+and it will show up in db/schema.js. You can also fire it off manually like this
+
+```
+rake db:schema:ember
+```
 
 ## Contributing
 

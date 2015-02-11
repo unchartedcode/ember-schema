@@ -1,8 +1,6 @@
 require "rake"
 require "ember/schema/version"
 
-load "lib/tasks/ember"
-
 module Ember
   module Schema
     def self.generate
@@ -137,3 +135,5 @@ module Ember
     end
   end
 end
+
+load "tasks/ember.rake"

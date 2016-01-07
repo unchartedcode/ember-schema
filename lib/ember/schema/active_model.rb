@@ -71,6 +71,11 @@ module Ember
         return { :attributes => attrs, :associations => associations }
       end
 
+      def abstract?(serializer_class)
+        serializer_class == ApplicationSerializer ||
+        (serializer_class.respond_to?(:ignore) && serializer_class.ignore)
+      end
+
       def get_type(association)
         if association.is_a? ::ActiveModel::Serializer::Association::HasMany
           return "has_many"

@@ -2,7 +2,9 @@ namespace :db do
   namespace :schema do
     desc 'Regenerate the Ember schema.js based on the serializers'
     task :ember => :environment do
-      if defined? RestPack::Serializer
+      if defined? JSONAPI::Resource
+        schema_hash = Ember::Schema.generate(JSONAPI::Resource)
+      elsif defined? RestPack::Serializer
         schema_hash = Ember::Schema.generate(RestPack::Serializer)
       else
         Rails.application.eager_load! # populate descendants

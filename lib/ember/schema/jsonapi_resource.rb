@@ -32,17 +32,18 @@ module Ember
 
         attrs = {}
         (serializer._attributes || {}).each do |name, options|
+          type = nil
           if options[:format].present?
-            attrs[name] = convert_format(options[:format]).to_s
-          else
+            type = convert_format(options[:format])
+          end 
+          
+          if type.blank?
             # If no type is given, attempt to get it from the Active Model class
             if column = columns[name.to_s]
-              attrs[name] = convert_format(column.type)
-            else
-              # Other wise default to string
-              attrs[name] = "string"
+              type = convert_format(column.type, column.type)
             end
           end
+          attrs[name] = (type || "string").to_s
         end
 
         associations = {}
@@ -66,14 +67,14 @@ module Ember
         serializer._abstract
       end
 
-      def convert_format(format)
+      def convert_format(format, default=nil)
         case format
           when :id
             :integer
           when :text
             :string
           else
-            format
+            default
         end
       end
     end

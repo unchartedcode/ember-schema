@@ -34,13 +34,13 @@ module Ember
         (serializer._attributes || {}).each do |name, options|
           type = nil
           if options[:format].present?
-            type = convert_format(options[:format])
-          end 
-          
+            type = convert_format(options[:format], options[:type])
+          end
+
           if type.blank?
             # If no type is given, attempt to get it from the Active Model class
             if column = columns[name.to_s]
-              type = convert_format(column.type, column.type)
+              type = convert_format(column.type, options[:type] || column.type)
             end
           end
           attrs[name] = (type || "string").to_s

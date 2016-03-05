@@ -68,7 +68,7 @@ module Ember
           end
         end
 
-        return { :attributes => attrs, :associations => associations, :defaults: {} }
+        return { :attributes => attrs, :associations => associations, :defaults => {} }
       end
 
       def abstract?(serializer_class)

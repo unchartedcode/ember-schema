@@ -31,6 +31,8 @@ module Ember
         columns = if klass.respond_to? :columns_hash then klass.columns_hash else {} end
 
         attrs = {}
+        defaults = {}
+        
         (serializer._attributes || {}).each do |name, options|
           type = nil
           if options[:format].present?
@@ -43,7 +45,20 @@ module Ember
               type = convert_format(column.type, options[:type] || column.type)
             end
           end
+          
+          default = nil
+          unless options[:default].nil?
+            default = convert_default(options[:default])
+          end
+          
+          if default.nil? && columns[name.to_s].present? && columns[name.to_s].null == false
+            default = convert_default(columns[name.to_s].default)
+          end
+          
           attrs[name] = (type || "string").to_s
+          unless default.nil?
+            defaults[name] = default
+          end
         end
 
         associations = {}
@@ -60,7 +75,7 @@ module Ember
           associations[name] = { type => relationship.type }
         end
 
-        return { :attributes => attrs, :associations => associations }
+        return { :attributes => attrs, :associations => associations, :defaults => defaults }
       end
 
       def abstract?(serializer)
@@ -75,6 +90,14 @@ module Ember
             :string
           else
             default
+        end
+      end
+      
+      def convert_default(value)
+        if value.is_a? BigDecimal
+          value.to_f
+        else 
+          value
         end
       end
     end

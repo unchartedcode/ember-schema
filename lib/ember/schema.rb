@@ -84,6 +84,7 @@ module Ember
       schema_diff = {}
       schema_diff[:attributes] = diff(base_schema[:attributes], schema[:attributes])
       schema_diff[:associations] = diff(base_schema[:associations], schema[:associations])
+      schema_diff[:defaults] = diff(base_schema[:defaults], schema[:defaults])
       return schema_diff
     end
 

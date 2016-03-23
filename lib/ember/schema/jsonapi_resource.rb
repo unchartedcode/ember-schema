@@ -55,7 +55,7 @@ module Ember
             default = convert_default(columns[name.to_s].default)
           end
           
-          attrs[name] = (type || "string").to_s
+          attrs[name] = (type || options[:type] || "string").to_s
           unless default.nil?
             defaults[name] = default
           end

@@ -25,7 +25,8 @@ module Ember
         columns = if klass.respond_to? :columns_hash then klass.columns_hash else {} end
 
         attrs = {}
-        (serializer.serializable_attributes || {}).each do |id, name|
+        (serializer.serializable_attributes || {}).each do |id, options|
+          name = options[:name]
           options = serializer.serializable_attributes_options[id] || {}
           if options[:type].present?
             attrs[name] = options[:type].to_s

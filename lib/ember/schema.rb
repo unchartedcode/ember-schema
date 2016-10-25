@@ -30,14 +30,12 @@ module Ember
           if klass.present?
             # if we are dealing with a polymorphic class, then process accordingly
             if klass.respond_to?(:base_class) && klass != klass.base_class
-              p "--Skipping inherited class: '#{klass.name}', it will be processed with parent"
               next
             end
 
             schema = generator.schema(serializer_class, klass)
             name = generator.camelize(serializer_class, klass)
             schema_hash[name] = schema
-            p "#{klass.name}: Complete"
             # Check for inherited serializer classes now
             generator.descendants(serializer_class).each do |child_serializer_class|
               begin
@@ -59,7 +57,6 @@ module Ember
                   # Modify parents schema
                   schema[:descendants] ||= {}
                   schema[:descendants][child_name] = diff_schema
-                  p "  > #{child_klass.name}: Child Complete"
                 end
               rescue => e
                 p e

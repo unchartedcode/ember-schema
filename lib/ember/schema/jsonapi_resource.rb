@@ -31,34 +31,44 @@ module Ember
         columns = if klass.respond_to? :columns_hash then klass.columns_hash else {} end
 
         attrs = {}
-        defaults = {}
-        
+
         (serializer._attributes || {}).each do |name, options|
-          type = nil
-          if options[:format].present?
-            type = convert_format(options[:format], options[:type])
+          attribute_format = options.delete(:format)
+          attribute_type = options.delete(:type)
+
+          if attribute_format.present?
+            options[:type] = convert_format(attribute_format, attribute_type)
           end
 
-          if type.blank?
+          if options[:type].blank?
             # If no type is given, attempt to get it from the Active Model class
             if column = columns[name.to_s]
-              type = convert_format(column.type, options[:type] || column.type)
+              options[:type] = convert_format(column.type, attribute_type || column.type)
             end
           end
-          
-          default = nil
-          unless options[:default].nil?
-            default = convert_default(options[:default])
+
+          if options[:type].blank?
+            options[:type] = 'string'
           end
-          
-          if default.nil? && columns[name.to_s].present? && columns[name.to_s].null == false
-            default = convert_default(columns[name.to_s].default)
+
+          attribute_default = options.delete(:default)
+          unless attribute_default.nil?
+            options[:defaultValue] = convert_default(attribute_default)
           end
-          
-          attrs[name] = (type || options[:type] || "string").to_s
-          unless default.nil?
-            defaults[name] = default
+
+          if options[:defaultValue].nil? && columns[name.to_s].present? && columns[name.to_s].null == false
+            options[:defaultValue] = convert_default(columns[name.to_s].default)
           end
+
+          if options[:defaultValue].nil?
+            options.delete(:defaultValue)
+          end
+
+          if options[:immutable].present?
+            options[:readOnly] = options.delete(:immutable)
+          end
+
+          attrs[name] = options
         end
 
         associations = {}
@@ -72,10 +82,18 @@ module Ember
                    else
                      fail "Relationship #{relationship} not found"
                  end
-          associations[name] = { type => relationship.type }
+
+          # Converting these to match how they used to be
+          prefixes = ['project', 'product', 'order', 'company', 'user']
+          prefix = prefixes.select { |p| "#{relationship.type}".starts_with?("#{p}_") }.first
+          if prefix.present?
+            associations[name] = { type => "#{relationship.type}".gsub(/#{prefix}_/, "#{prefix}/") }
+          else
+            associations[name] = { type => relationship.type }
+          end
         end
 
-        return { :attributes => attrs, :associations => associations, :defaults => defaults }
+        return { :attributes => attrs, :associations => associations }
       end
 
       def abstract?(serializer)
@@ -92,11 +110,11 @@ module Ember
             default
         end
       end
-      
+
       def convert_default(value)
         if value.is_a? BigDecimal
           value.to_f
-        else 
+        else
           value
         end
       end

@@ -32,7 +32,9 @@ module Ember
 
         attrs = {}
 
-        (serializer._attributes || {}).each do |name, options|
+        (serializer._attributes || {}).each do |name, o|
+          options = o.dup
+
           attribute_format = options.delete(:format)
           attribute_type = options.delete(:type)
 

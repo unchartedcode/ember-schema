@@ -6,7 +6,7 @@ module Ember
       end
 
       def serializers
-        Dir["#{Rails.root}/app/resources/**/*.rb"].map { |f|
+        Dir["#{Rails.root}/app/resources/**/*_resource.rb"].map { |f|
           f.gsub(/#{Rails.root}\/app\/resources\//, '').gsub("_resource#{File.extname(f)}",'')
         }.map { |f|
           JSONAPI::Resource.resource_for(f)

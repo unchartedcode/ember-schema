@@ -34,41 +34,41 @@ module Ember
 
         (serializer._attributes || {}).each do |name, o|
           options = o.dup
+          column = columns[name.to_s]
 
-          attribute_format = options.delete(:format)
-          attribute_type = options.delete(:type)
+          # Always remove the format, we don't want it passed through to schema
+          options.delete(:format)
 
-          if attribute_format.present?
-            options[:type] = convert_format(attribute_format, attribute_type)
-          end
-
-          if options[:type].blank?
-            # If no type is given, attempt to get it from the Active Model class
-            if column = columns[name.to_s]
-              options[:type] = convert_format(column.type, attribute_type || column.type)
+          # Get the default from the column whenever possible if type isn't passed in
+          if options[:type].nil?
+            if column.present?
+              options[:type] = get_type_from_column(column)
+            else
+              options[:type] = :string
             end
           end
 
-          if options[:type].blank?
-            options[:type] = 'string'
+          # Set defaultValue from default alias
+          if !options[:default].nil?
+            options[:defaultValue] = options.delete(:default)
           end
 
-          attribute_default = options.delete(:default)
-          unless attribute_default.nil?
-            options[:defaultValue] = convert_default(attribute_default)
+          # If default is still nil, try to get it from the column
+          if options[:defaultValue].nil? && column.present?
+            options[:defaultValue] = get_default_from_column(column)
           end
 
-          if options[:defaultValue].nil? && columns[name.to_s].present? && columns[name.to_s].null == false
-            options[:defaultValue] = convert_default(columns[name.to_s].default)
-          end
-
+          # If we don't have a default, just remove the key
           if options[:defaultValue].nil?
             options.delete(:defaultValue)
           end
 
-          if options[:immutable].present?
-            options[:readOnly] = options.delete(:immutable)
+          # Get immutable value
+          if options[:immutable] == true || serializer._immutable == true
+            options[:readOnly] = true
           end
+          # Always remove immutable, we don't want it passed through to schema
+          options.delete(:immutable)
 
           attrs[name] = options
         end
@@ -102,23 +102,43 @@ module Ember
         serializer._abstract
       end
 
-      def convert_format(format, default=nil)
-        case format
-          when :id
-            :integer
-          when :text
-            :string
-          else
-            default
+      def get_type_from_column(column)
+        if column.array == true
+          return :array
         end
+
+        if column.type == :text
+          return :string
+        end
+
+        column.type
       end
 
-      def convert_default(value)
-        if value.is_a? BigDecimal
-          value.to_f
-        else
-          value
+      def get_default_from_column(column)
+        if column.default.nil?
+          return nil
         end
+
+        if column.array == true
+          return []
+        end
+
+        if column.type == :integer
+          return column.default.to_i
+        end
+
+        if column.type == :jsonb
+          return {}
+        end
+
+        if column.type == :boolean
+          if column.default == "true"
+            return true
+          end
+          return false
+        end
+
+        column.default
       end
     end
   end

@@ -50,7 +50,12 @@ module Ember
           end
         end
 
-        return { :attributes => attrs, :associations => associations }
+        return { :attributes => attrs, :associations => associations, :defaults => {} }
+      end
+
+      def abstract?(serializer_class)
+        serializer_class == ApplicationSerializer ||
+        (serializer_class.respond_to?(:ignore) && serializer_class.ignore)
       end
     end
   end

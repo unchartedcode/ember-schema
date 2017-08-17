@@ -2,6 +2,7 @@ require "rake"
 require "ember/schema/version"
 require "ember/schema/rest_pack"
 require "ember/schema/active_model"
+require "ember/schema/jsonapi_resource"
 
 module Ember
   module Schema
@@ -11,6 +12,8 @@ module Ember
       schema_hash = {}
 
       case type.to_s
+        when "JSONAPI::Resource"
+          generator = JsonapiResource.new
         when "RestPack::Serializer"
           generator = RestPack.new
         when "ActiveModel::Serializer"
@@ -21,8 +24,7 @@ module Ember
 
       generator.serializers.each do |serializer_class|
         begin
-          next if serializer_class == ApplicationSerializer
-          next if serializer_class.respond_to?(:ignore) && serializer_class.ignore
+          next if generator.abstract?(serializer_class)
 
           klass = generator.get_klass(serializer_class)
           if klass.present?
@@ -38,8 +40,8 @@ module Ember
             generator.descendants(serializer_class).each do |child_serializer_class|
               begin
                 # to be inherited, it has to have a subclass thats not the base and a klass that is inherited
-                if child_serializer_class == ApplicationSerializer || # skip, default class
-                  child_serializer_class.superclass == ApplicationSerializer || # skip, base is default class, not inherited
+                if generator.abstract?(child_serializer_class) || # skip, default class
+                  generator.abstract?(child_serializer_class.superclass) || # skip, base is default class, not inherited
                   child_serializer_class.superclass == generator.superclass || # skip, default class
                   child_serializer_class == serializer_class # skip serializer is itself
                   next
@@ -79,6 +81,7 @@ module Ember
       schema_diff = {}
       schema_diff[:attributes] = diff(base_schema[:attributes], schema[:attributes])
       schema_diff[:associations] = diff(base_schema[:associations], schema[:associations])
+      schema_diff[:defaults] = diff(base_schema[:defaults], schema[:defaults])
       return schema_diff
     end
 

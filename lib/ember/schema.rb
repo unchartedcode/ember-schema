@@ -22,7 +22,7 @@ module Ember
           return
       end
 
-      generator.serializers.each do |serializer_class|
+      generator.serializers.sort_by(&:name).each do |serializer_class|
         begin
           next if generator.abstract?(serializer_class)
 

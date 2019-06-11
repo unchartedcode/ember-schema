@@ -102,7 +102,7 @@ module Ember
           associations[name] = data
         end
 
-        return { :attributes => attrs, :associations => associations, :defaults => {} }
+        return { :attributes => attrs, :associations => associations }
       end
 
       def abstract?(serializer)

@@ -1,6 +1,5 @@
 require "rake"
 require "ember/schema/version"
-require "ember/schema/rest_pack"
 require "ember/schema/active_model"
 require "ember/schema/jsonapi_resource"
 

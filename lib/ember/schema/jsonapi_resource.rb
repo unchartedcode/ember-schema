@@ -77,25 +77,32 @@ module Ember
 
         serializer._relationships.each do |name, relationship|
           type = case relationship
-                   when JSONAPI::Relationship::ToOne
-                     :belongs_to
-                   when JSONAPI::Relationship::ToMany
-                     :has_many
-                   else
-                     fail "Relationship #{relationship} not found"
-                 end
+            when JSONAPI::Relationship::ToOne
+              :belongs_to
+            when JSONAPI::Relationship::ToMany
+              :has_many
+            else
+              fail "Relationship #{relationship} not found"
+          end
 
           # Converting these to match how they used to be
           prefixes = ['project', 'product', 'order', 'company', 'user']
           prefix = prefixes.select { |p| "#{relationship.type}".starts_with?("#{p}_") }.first
+          data = {}
           if prefix.present?
-            associations[name] = { type => "#{relationship.type}".gsub(/#{prefix}_/, "#{prefix}/") }
+            data = { type => "#{relationship.type}".gsub(/#{prefix}_/, "#{prefix}/") }
           else
-            associations[name] = { type => relationship.type }
+            data = { type => relationship.type }
           end
+
+          if relationship.options.present? && relationship.options.has_key?(:inverse)
+            data[:inverse] = relationship.options[:inverse]
+          end
+
+          associations[name] = data
         end
 
-        return { :attributes => attrs, :associations => associations }
+        return { :attributes => attrs, :associations => associationsm, :defaults => {} }
       end
 
       def abstract?(serializer)

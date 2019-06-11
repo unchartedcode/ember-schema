@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.version       = Ember::Schema::VERSION
   spec.authors       = ["Nathan Palmer", "Aaron Hansen"]
   spec.email         = ["nathan@nathanpalmer.com"]
-  spec.summary       = %q{Generates a json schema for restpack_serializer models}
+  spec.summary       = %q{Generates a json schema for jsonapi_resource models}
   # spec.description   = %q{TODO: Write a longer description. Optional.}
   spec.homepage      = ""
   spec.license       = "MIT"

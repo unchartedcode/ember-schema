@@ -4,8 +4,6 @@ namespace :db do
     task :ember => :environment do
       if defined? JSONAPI::Resource
         schema_hash = Ember::Schema.generate(JSONAPI::Resource)
-      elsif defined? RestPack::Serializer
-        schema_hash = Ember::Schema.generate(RestPack::Serializer)
       else
         Rails.application.eager_load! # populate descendants
         schema_hash = Ember::Schema.generate(ActiveModel::Serializer)

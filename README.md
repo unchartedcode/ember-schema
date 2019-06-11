@@ -1,6 +1,6 @@
 # UnchartedCode Ember::Schema
 
-Generates a json schema for restpack_serializer models
+Generates a json schema for jasonapi resource models
 
 ## Installation
 

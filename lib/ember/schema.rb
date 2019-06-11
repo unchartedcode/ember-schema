@@ -14,8 +14,6 @@ module Ember
       case type.to_s
         when "JSONAPI::Resource"
           generator = JsonapiResource.new
-        when "RestPack::Serializer"
-          generator = RestPack.new
         when "ActiveModel::Serializer"
           generator = ActiveModel.new
         else

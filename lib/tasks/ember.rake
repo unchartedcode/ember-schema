@@ -20,22 +20,13 @@ end
 ##
 # Automatically generate schema when migration changes occur
 ##
-if ActiveRecord::Base.dump_schema_after_migration
-  namespace :db do
-    task :_dump => [ 'db:schema:ember' ]
-  end
-else
-  namespace :db do
-    task :migrate do
-      Rake::Task['db:schema:ember'].invoke
-    end
-
-    namespace :migrate do
-      [:change, :up, :down, :reset, :redo].each do |t|
-        task t do
-          Rake::Task['db:schema:ember'].invoke
-        end
-      end
-    end
-  end
+[
+  ActiveRecord::Base.dump_schema_after_migration ? "db:_dump" : nil,
+  "db:migrate",
+  "db:migrate:up",
+  "db:migrate:down",
+  "db:migrate:reset",
+  "db:migrate:redo"
+].compact.each do |task|
+  Rake::Task[task].enhance ["db:schema:ember"]
 end

@@ -26,6 +26,6 @@ end
   "db:migrate:down",
   "db:migrate:reset",
   "db:migrate:redo"
-].compact.each do |task|
+].each do |task|
   Rake::Task[task].enhance ["db:schema:ember"]
 end

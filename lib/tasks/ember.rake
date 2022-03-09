@@ -16,16 +16,3 @@ namespace :db do
     end
   end
 end
-
-##
-# Automatically generate schema when migration changes occur
-##
-[
-  "db:migrate",
-  "db:migrate:up",
-  "db:migrate:down",
-  "db:migrate:reset",
-  "db:migrate:redo"
-].each do |task|
-  Rake::Task[task].enhance ["db:schema:ember"]
-end

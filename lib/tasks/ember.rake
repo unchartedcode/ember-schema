@@ -21,7 +21,6 @@ end
 # Automatically generate schema when migration changes occur
 ##
 [
-  ActiveRecord::Base.dump_schema_after_migration ? "db:_dump" : nil,
   "db:migrate",
   "db:migrate:up",
   "db:migrate:down",
